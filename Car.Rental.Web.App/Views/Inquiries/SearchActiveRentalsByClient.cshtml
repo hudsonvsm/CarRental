@@ -1,0 +1,63 @@
+﻿@using Car.Rental.Web.App.Models;
+@model Tuple<List<Rental>, List<VehicleModel>>
+
+@{
+    ViewBag.Title = "SearchActiveRentalsByClient";
+}
+
+<h2>SearchActiveRentalsByClient</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <p>
+        Title: <input type="text" name="vihicleModel">
+        <input type="submit" value="Filter" />
+    </p>
+}
+
+@if(Model != null && Model.Item1.Count() != 0)
+{
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Item1[0].Client.FirstName)
+            @Html.DisplayNameFor(model => model.Item1[0].Client.LastName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Item1[0].Vehicle.LicensePlate)
+        </th>
+        <th>
+            Brand - Model
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Item1[0].RentedAt)
+        </th>
+    </tr>
+
+    @foreach (var item in Model.Item1)
+    {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Client.FirstName)
+            @Html.DisplayFor(modelItem => item.Client.LastName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Vehicle.LicensePlate)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Vehicle.VehicleModel.VehicleBrand.Name) -
+            @Html.DisplayFor(modelItem => item.Vehicle.VehicleModel.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.RentedAt)
+        </td>
+    </tr>
+    }
+</table>
+
+}
+else
+{
+    <div>NO data to show</div>
+}

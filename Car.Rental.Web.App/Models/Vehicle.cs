@@ -35,9 +35,9 @@ namespace Car.Rental.Web.App.Models
         [Required]
         public decimal PricePerDay { get; set; }
 
-        public virtual ICollection<Rental> Rentals { get; set; }
-
         [Required]
         public Type Type { get; set; }
+
+        public virtual ICollection<Rental> Rentals { get; set; }
     }
 }

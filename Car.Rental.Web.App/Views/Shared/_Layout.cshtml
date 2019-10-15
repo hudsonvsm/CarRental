@@ -6,8 +6,6 @@
     <title>@ViewBag.Title - Car rental</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")
 </head>
 <body>
     <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
@@ -23,10 +21,23 @@
                 <li class="nav-item">@Html.ActionLink("VehicleModels", "Index", "VehicleModels", new { area = "" }, new { @class = "nav-link" })</li>
                 <li class="nav-item">@Html.ActionLink("Clients", "Index", "Clients", new { area = "" }, new { @class = "nav-link" })</li>
                 <li class="nav-item">@Html.ActionLink("DriverLicenses", "Index", "DriverLicenses", new { area = "" }, new { @class = "nav-link" })</li>
+                <li class="nav-item dropdown show">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Search For
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        @Html.ActionLink("Active Rentals By Vihicle Model", "SearchActiveRentalsByVihicleModel", "Inquiries", new { area = "" }, new { @class = "dropdown-item" })
+                        @Html.ActionLink("Active Rentals By Client", "SearchActiveRentalsByClient", "Inquiries", new { area = "" }, new { @class = "dropdown-item" })
+                        @Html.ActionLink("Past Rentals By Vihicle Model And Date", "SearchPastRentalsByVihicleModelAndDate", "Inquiries", new { area = "" }, new { @class = "dropdown-item" })
+                        @Html.ActionLink("Past Rentals By Client And Date", "SearchPastRentalsByClientAndDate", "Inquiries", new { area = "" }, new { @class = "dropdown-item" })
+                        @Html.ActionLink("Most Rented Vihicles", "SearchMostRentedVihicles", "Inquiries", new { area = "" }, new { @class = "dropdown-item" })
+                    </div>
+                </li>
                 <!-- Add links here -->
             </ul>
         </div>
     </nav>
+
     <div class="container body-content">
         @RenderBody()
         <hr />
@@ -37,6 +48,7 @@
 
     @RenderSection("scripts", required: false)
     @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/popper")
     @Scripts.Render("~/bundles/bootstrap")
 </body>
 </html>

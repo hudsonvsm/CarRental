@@ -244,7 +244,11 @@
     <Content Include="Views\Vehicles\Details.cshtml" />
     <Content Include="Views\Vehicles\Edit.cshtml" />
     <Content Include="Views\Vehicles\Index.cshtml" />
-    <Content Include="Views\Inquiries\Index.cshtml" />
+    <Content Include="Views\Inquiries\SearchActiveRentalsByVihicleModel.cshtml" />
+    <Content Include="Views\Inquiries\SearchActiveRentalsByClient.cshtml" />
+    <Content Include="Views\Inquiries\SearchPastRentalsByVihicleModelAndDate.cshtml" />
+    <Content Include="Views\Inquiries\SearchPastRentalsByClientAndDate.cshtml" />
+    <Content Include="Views\Inquiries\SearchMostRentedVihicles.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
