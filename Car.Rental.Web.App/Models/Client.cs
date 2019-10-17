@@ -30,7 +30,8 @@ namespace Car.Rental.Web.App.Models
         public string Address { get; set; }
 
         [Required]
-        public DriverLicense DriverLicense { get; set; }
+        public Guid DriverLicenseId { get; set; }
+        public virtual DriverLicense DriverLicense { get; set; }
 
         public virtual ICollection<Rental> Rentals { get; set; }
     }

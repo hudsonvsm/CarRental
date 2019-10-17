@@ -1,0 +1,62 @@
+﻿@using Car.Rental.Web.App.Models;
+@model Tuple<Dictionary<Rental, decimal>, List<SelectListItem>>
+
+@{
+    ViewBag.Title = "Search Most Profitable Client";
+}
+
+<h2 class="m-5 text-center">Search Most Profitable Client</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div class="row mb-4">
+        @Html.DropDownList("count", new SelectList(Model.Item2, "Value", "Text"), htmlAttributes: new { @name = "count", @class = "col-10 form-control", id = "Models" })
+        <input class="btn btn-outline-primary col ml-3" type="submit" value="Filter" />
+    </div>
+}
+
+@if (Model != null && Model.Item1.Count != 0)
+{
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Item1.First().Key.Client.FirstName)
+                @Html.DisplayNameFor(model => model.Item1.First().Key.Client.LastName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Item1.First().Key.Client.Address)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Item1.First().Key.Client.DriverLicense) -
+                @Html.DisplayNameFor(model => model.Item1.First().Key.Client.DriverLicense.ValidUntil)
+            </th>
+            <th>
+                Earned money
+            </th>
+        </tr>
+
+        @foreach (var item in Model.Item1)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Key.Client.FirstName)
+                    @Html.DisplayFor(modelItem => item.Key.Client.LastName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Key.Client.Address)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Key.Client.DriverLicense.ValidUntil)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Value)
+                </td>
+            </tr>
+        }
+    </table>
+}
+else
+{
+    <div>NO data to show</div>
+}

@@ -1,0 +1,61 @@
+﻿@using Car.Rental.Web.App.Models;
+@model Tuple<Dictionary<Rental, int>, List<SelectListItem>>
+
+@{
+    ViewBag.Title = "Search Most Rented Vihicles";
+}
+
+<h2 class="m-5 text-center">Search Most Rented Vihicles</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div class="row mb-4">
+        @Html.DropDownList("count", new SelectList(Model.Item2, "Value", "Text"), htmlAttributes: new { @name = "count", @class = "col-10 form-control", id = "Models" })
+        <input class="btn btn-outline-primary col ml-3" type="submit" value="Filter" />
+    </div>
+}
+
+@if (Model != null && Model.Item1.Count != 0)
+{
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Item1.First().Key.Vehicle.LicensePlate)
+            </th>
+            <th>
+                Brand - Model
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Item1.First().Key.RentedAt)
+            </th>
+            <th>
+                Rented times
+            </th>
+        </tr>
+
+        @foreach (var item in Model.Item1)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Key.Vehicle.LicensePlate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Key.Vehicle.VehicleModel.VehicleBrand.Name) -
+                @Html.DisplayFor(modelItem => item.Key.Vehicle.VehicleModel.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Key.RentedAt)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Value)
+            </td>
+        </tr>
+        }
+    </table>
+
+}
+else
+{
+    <div>NO data to show</div>
+}

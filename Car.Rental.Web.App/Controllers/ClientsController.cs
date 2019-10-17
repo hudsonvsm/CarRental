@@ -6,8 +6,8 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using Car.Rental.Web.App.Models.DataAccessLayer;
 using Car.Rental.Web.App.Models;
+using Car.Rental.Web.App.Models.DataAccessLayer;
 
 namespace Car.Rental.Web.App.Controllers
 {
@@ -18,8 +18,8 @@ namespace Car.Rental.Web.App.Controllers
         // GET: Clients
         public ActionResult Index()
         {
-
-            return View(db.Clients == null ? new List<Client>() : db.Clients.ToList());
+            var clients = db.Clients.Include(c => c.DriverLicense);
+            return View(clients.ToList());
         }
 
         // GET: Clients/Details/5
@@ -29,20 +29,18 @@ namespace Car.Rental.Web.App.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-
             Client client = db.Clients.Find(id);
-
             if (client == null)
             {
                 return HttpNotFound();
             }
-
             return View(client);
         }
 
         // GET: Clients/Create
         public ActionResult Create()
         {
+            ViewBag.DriverLicenseId = new SelectList(db.DriverLicenses, "Id", "IdentificationNumber");
             return View();
         }
 
@@ -51,7 +49,7 @@ namespace Car.Rental.Web.App.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,FirstName,LastName,IdentificationNumber,Address")] Client client)
+        public ActionResult Create([Bind(Include = "Id,FirstName,LastName,IdentificationNumber,Address,DriverLicenseId")] Client client)
         {
             if (ModelState.IsValid)
             {
@@ -61,6 +59,7 @@ namespace Car.Rental.Web.App.Controllers
                 return RedirectToAction("Index");
             }
 
+            ViewBag.DriverLicenseId = new SelectList(db.DriverLicenses, "Id", "IdentificationNumber", client.DriverLicenseId);
             return View(client);
         }
 
@@ -76,6 +75,7 @@ namespace Car.Rental.Web.App.Controllers
             {
                 return HttpNotFound();
             }
+            ViewBag.DriverLicenseId = new SelectList(db.DriverLicenses, "Id", "IdentificationNumber", client.DriverLicenseId);
             return View(client);
         }
 
@@ -84,7 +84,7 @@ namespace Car.Rental.Web.App.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,FirstName,LastName,IdentificationNumber,Address")] Client client)
+        public ActionResult Edit([Bind(Include = "Id,FirstName,LastName,IdentificationNumber,Address,DriverLicenseId")] Client client)
         {
             if (ModelState.IsValid)
             {
@@ -92,6 +92,7 @@ namespace Car.Rental.Web.App.Controllers
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
+            ViewBag.DriverLicenseId = new SelectList(db.DriverLicenses, "Id", "IdentificationNumber", client.DriverLicenseId);
             return View(client);
         }
 
