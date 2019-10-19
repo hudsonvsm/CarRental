@@ -1,5 +1,5 @@
 ﻿@using Car.Rental.Web.App.Models;
-@model Tuple<Dictionary<Rental, decimal>, List<SelectListItem>>
+@model Tuple<Dictionary<Rental, decimal>, List<SelectListItem>, string>
 
 @{
     ViewBag.Title = "Search Most Profitable Client";
@@ -34,6 +34,9 @@
             <th>
                 Earned money
             </th>
+            <th>
+                <a href="@Model.Item3" target="_blank" download="Export.csv" class="btn btn-outline-info">Export</a>
+            </th>
         </tr>
 
         @foreach (var item in Model.Item1)
@@ -52,6 +55,7 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Value)
                 </td>
+                <td></td>
             </tr>
         }
     </table>

@@ -16,7 +16,7 @@
 }
 
 <p>
-    @Html.ActionLink("Create New", "Create")
+    @Html.ActionLink("Create New", "Create", null, htmlAttributes: new { @class = "btn btn-outline-dark" })
 </p>
 <table class="table">
     <tr>
@@ -37,25 +37,25 @@
 
     @foreach (var item in Model)
     {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Client.FirstName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Vehicle.LicensePlate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RentedAt)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ReturnedAt)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.Id }, new { @class = "btn btn-outline-primary mr-1" })
-                @Html.ActionLink("Details", "Details", new { id = item.Id }, new { @class = "btn btn-outline-success mr-1" })
-                @Html.ActionLink("Delete", "Delete", new { id = item.Id }, new { @class = "btn btn-outline-danger" })
-            </td>
-        </tr>
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Client.FirstName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Vehicle.LicensePlate)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.RentedAt)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.ReturnedAt)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id = item.Id }, htmlAttributes: new { @class = "btn btn-outline-warning mx-1" })
+            @Html.ActionLink("Details", "Details", new { id = item.Id }, htmlAttributes: new { @class = "btn btn-outline-info mx-1" })
+            @Html.ActionLink("Delete", "Delete", new { id = item.Id }, htmlAttributes: new { @class = "btn btn-outline-danger mx-1" })
+        </td>
+    </tr>
     }
 
 </table>

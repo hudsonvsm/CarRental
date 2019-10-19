@@ -1,5 +1,5 @@
-﻿@using Car.Rental.Web.App.Models;
-@model Tuple<Dictionary<Rental, int>, List<SelectListItem>>
+﻿@using Car.Rental.Web.App.ViewModels;
+@model Tuple<List<RentalMostRentedVehicle>, List<SelectListItem>, string>
 
 @{
     ViewBag.Title = "Search Most Rented Vihicles";
@@ -21,16 +21,22 @@
     <table class="table">
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Item1.First().Key.Vehicle.LicensePlate)
+                @Html.DisplayNameFor(model => model.Item1[0].LicensePlate)
             </th>
             <th>
-                Brand - Model
+                @Html.DisplayNameFor(model => model.Item1[0].BrandAndModel)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Item1.First().Key.RentedAt)
+                @Html.DisplayNameFor(model => model.Item1[0].PricePerDay)
             </th>
             <th>
-                Rented times
+                @Html.DisplayNameFor(model => model.Item1[0].TotalDaysRented)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Item1[0].RentsCount)
+            </th>
+            <th>
+                <a href="@Model.Item3" target="_blank" download="Export.csv" class="btn btn-outline-info">Export</a>
             </th>
         </tr>
 
@@ -38,22 +44,24 @@
         {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Key.Vehicle.LicensePlate)
+                @Html.DisplayFor(modelItem => item.LicensePlate)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Key.Vehicle.VehicleModel.VehicleBrand.Name) -
-                @Html.DisplayFor(modelItem => item.Key.Vehicle.VehicleModel.Name)
+                @Html.DisplayFor(modelItem => item.BrandAndModel)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Key.RentedAt)
+                @Html.DisplayFor(modelItem => item.PricePerDay)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Value)
+                @Html.DisplayFor(modelItem => item.TotalDaysRented)
             </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RentsCount)
+            </td>
+            <td></td>s
         </tr>
         }
     </table>
-
 }
 else
 {

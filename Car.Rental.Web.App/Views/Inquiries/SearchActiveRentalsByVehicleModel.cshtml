@@ -1,5 +1,5 @@
 ﻿@using Car.Rental.Web.App.Models;
-@model Tuple<List<Rental>, List<SelectListItem>>
+@model Tuple<List<Rental>, List<SelectListItem>, string>
 
 @{
     ViewBag.Title = "Search Active Rentals By Vehicle Model";
@@ -10,10 +10,10 @@
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-<div class="row mb-4">
-    @Html.DropDownList("vihicleModel", new SelectList(Model.Item2, "Value", "Text"), htmlAttributes: new { @name = "vihicleModel",  @class = "col-10 form-control", id = "Models" })
-    <input class="btn btn-outline-primary col ml-3" type="submit" value="Filter" />
-</div>
+    <div class="row mb-4">
+        @Html.DropDownList("vihicleModel", new SelectList(Model.Item2, "Value", "Text"), htmlAttributes: new { @name = "vihicleModel", @class = "col-10 form-control", id = "Models" })
+        <input class="btn btn-outline-primary col ml-3" type="submit" value="Filter" />
+    </div>
 }
 
 @if (Model != null && Model.Item1.Count() != 0)
@@ -33,29 +33,32 @@
             <th>
                 @Html.DisplayNameFor(model => model.Item1[0].RentedAt)
             </th>
+            <th>
+                <a href="@Model.Item3" target="_blank" download="Export.csv" class="btn btn-outline-info">Export</a>
+            </th>
         </tr>
 
         @foreach (var item in Model.Item1)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Client.FirstName)
-                    @Html.DisplayFor(modelItem => item.Client.LastName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Vehicle.LicensePlate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Vehicle.VehicleModel.VehicleBrand.Name) -
-                    @Html.DisplayFor(modelItem => item.Vehicle.VehicleModel.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.RentedAt)
-                </td>
-            </tr>
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Client.FirstName)
+                @Html.DisplayFor(modelItem => item.Client.LastName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Vehicle.LicensePlate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Vehicle.VehicleModel.VehicleBrand.Name) -
+                @Html.DisplayFor(modelItem => item.Vehicle.VehicleModel.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RentedAt)
+            </td>
+            <td></td>
+        </tr>
         }
     </table>
-
 }
 else
 {

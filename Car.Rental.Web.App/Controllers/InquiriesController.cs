@@ -3,13 +3,19 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Core.Objects;
+using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using Car.Rental.Web.App.Models;
 using Car.Rental.Web.App.Models.DataAccessLayer;
+using Car.Rental.Web.App.ViewModels;
+using CsvHelper;
 using RentalModel = Car.Rental.Web.App.Models.Rental;
+using SystemType = System.Type;
 
 namespace Car.Rental.Web.App.Controllers
 {
@@ -46,7 +52,19 @@ namespace Car.Rental.Web.App.Controllers
                 })
                 .ToList();
 
-            return View(new Tuple<List<RentalModel>, List<SelectListItem>>(rentals, models));
+            var objects = rentals
+            .Select(x => new RentalViewModelClient
+            {
+                FullName = x.Client.FirstName + " " + x.Client.LastName,
+                LicensePlate = x.Vehicle.LicensePlate,
+                RentedAt = x.RentedAt,
+                VehicleBrandModel = x.Vehicle.VehicleModel.VehicleBrand.Name + " - " + x.Vehicle.VehicleModel.Name
+            })
+            .ToList<object>();
+
+            var csvString = this.GenerateCsvString(objects);
+
+            return View(new Tuple<List<RentalModel>, List<SelectListItem>, string>(rentals, models, csvString));
         }
 
         // GET: SearchActiveRentalsByClient
@@ -76,7 +94,19 @@ namespace Car.Rental.Web.App.Controllers
                 })
                 .ToList();
 
-            return View(new Tuple<List<RentalModel>, List<SelectListItem>>(rentals, models));
+            var objects = rentals
+                .Select(x => new RentalViewModelClient
+                {
+                    FullName = x.Client.FirstName + " " + x.Client.LastName,
+                    LicensePlate = x.Vehicle.LicensePlate,
+                    RentedAt = x.RentedAt,
+                    VehicleBrandModel = x.Vehicle.VehicleModel.VehicleBrand.Name + " - " + x.Vehicle.VehicleModel.Name
+                })
+                .ToList<object>();
+
+            var csvString = this.GenerateCsvString(objects);
+
+            return View(new Tuple<List<RentalModel>, List<SelectListItem>, string>(rentals, models, csvString));
         }
 
         // GET: SearchMostProfitableClient
@@ -93,20 +123,27 @@ namespace Car.Rental.Web.App.Controllers
             var rentals = this.db.Rentals
                 .Include(r => r.Vehicle)
                 .Include(r => r.Client)
-                //.Where(r => r.ReturnedAt != null)
-                .ToList();
-
-            var out1 = rentals
+                .ToList()
                 .GroupBy(r => r.ClientId)
-                //.OrderByDescending(gr => gr.Sum(r => this.CalculatePrice(r)))
+                .OrderByDescending(gr => gr.Sum(r => this.CalculatePrice(r)))
                 .Take(count.Value)
-                .ToDictionary(x => x.ToList()[0], x => x.Sum(r => this.CalculatePrice(r)))
-                .OrderByDescending(gr => gr.Value)
-                .ToDictionary(k => k.Key, v => v.Value);
+                .ToDictionary(x => x.ToList()[0], x => x.Sum(r => this.CalculatePrice(r)));
 
-            var items = GetItemsByMaxCount(maxCount, count.Value);
+            var items = GetSelectListItemsByMaxCount(maxCount, count.Value);
 
-            return View(new Tuple<Dictionary<RentalModel, decimal>, List<SelectListItem>>(out1, items));
+            var objects = rentals
+                .Select(x => new RentalMostProfitableClent
+                {
+                    FullName = x.Key.Client.FirstName + " " + x.Key.Client.LastName,
+                    Adrress = x.Key.Client.Address,
+                    DriverLicenseValidUntil = x.Key.Client.DriverLicense.ValidUntil,
+                    EarnedMoney = x.Value
+                })
+                .ToList<object>();
+
+            var csvString = this.GenerateCsvString(objects);
+
+            return View(new Tuple<Dictionary<RentalModel, decimal>, List<SelectListItem>, string>(rentals, items, csvString));
         }
 
         // GET: SearchMostProfitableVehicles
@@ -124,15 +161,27 @@ namespace Car.Rental.Web.App.Controllers
                 .Include(r => r.Vehicle)
                 .ToList()
                 .GroupBy(r => r.VehicleId)
-                //.OrderByDescending(gr => gr.Sum(r => this.CalculatePrice(r)))
+                .OrderByDescending(gr => gr.Sum(r => this.CalculatePrice(r)))
                 .Take(count.Value)
-                .ToDictionary(x => x.ToList()[0], x => x.Sum(r => this.CalculatePrice(r)))
-                .OrderByDescending(gr => gr.Value)
-                .ToDictionary(k => k.Key, v => v.Value);
+                .Select(x => {
+                    var rental = x.ToList()[0];
+                    var calcDays = x.Sum(r => this.CalculateDays(r));
+                    return new RentalMostProfitableVehicle
+                    {
+                        BrandModel = rental.Vehicle.VehicleModel.VehicleBrand.Name + " - " + rental.Vehicle.VehicleModel.Name,
+                        LicensePlate = rental.Vehicle.LicensePlate,
+                        PricePerDay = rental.Vehicle.PricePerDay,
+                        TotalDaysRented = calcDays,
+                        EarnedMoney = calcDays * rental.Vehicle.PricePerDay
+                    };
+                })
+                .ToList();
 
-            var items = GetItemsByMaxCount(maxCount, count.Value);
+            var items = GetSelectListItemsByMaxCount(maxCount, count.Value);
 
-            return View(new Tuple<Dictionary<RentalModel, decimal>, List<SelectListItem>>(rentals, items));
+            var csvString = this.GenerateCsvString(rentals.ToList<object>());
+
+            return View(new Tuple<List<RentalMostProfitableVehicle>, List<SelectListItem>, string>(rentals, items, csvString));
         }
 
         // GET: SearchMostRentedVehicles
@@ -146,24 +195,40 @@ namespace Car.Rental.Web.App.Controllers
 
             var rentals = this.db.Rentals
                 .Include(r => r.Vehicle)
-                .GroupBy(r => r.Vehicle.LicensePlate)
+                .ToList()
+                .GroupBy(r => r.VehicleId)
                 .OrderByDescending(gr => gr.Count())
                 .Take(count.Value)
-                .ToDictionary(x => x.ToList()[0], x => x.Count());
+                .Select(x => new RentalMostRentedVehicle
+                {
+                    BrandAndModel = x.ToList()[0].Vehicle.VehicleModel.VehicleBrand.Name + " - " + x.ToList()[0].Vehicle.VehicleModel.Name,
+                    LicensePlate = x.ToList()[0].Vehicle.LicensePlate,
+                    PricePerDay = x.ToList()[0].Vehicle.PricePerDay,
+                    TotalDaysRented = x.Sum(r => this.CalculateDays(r)),
+                    RentsCount = x.Count()
+                })
+                .ToList();
 
-            var items = GetItemsByMaxCount(maxCount, count.Value);
+            var items = GetSelectListItemsByMaxCount(maxCount, count.Value);
+            
+            var csvString = this.GenerateCsvString(rentals.ToList<object>());
 
-            return View(new Tuple<Dictionary<RentalModel, int>, List<SelectListItem>>(rentals, items));
+            return View(new Tuple<List<RentalMostRentedVehicle>, List<SelectListItem>, string>(rentals, items, csvString));
         }
 
         private decimal CalculatePrice(RentalModel rental)
-         {
-            var latestDate = rental.ReturnedAt == null ? DateTime.Now : rental.ReturnedAt.Value;
-
-            return (decimal) Math.Ceiling((latestDate.Date - rental.RentedAt.Date).TotalDays) * rental.Vehicle.PricePerDay;
+        {
+            return (decimal) this.CalculateDays(rental) * rental.Vehicle.PricePerDay;
         }
 
-    private List<SelectListItem> GetItemsByMaxCount(int maxCount, int selected)
+        private decimal CalculateDays(RentalModel rental)
+        {
+            var latestDate = rental.ReturnedAt == null ? DateTime.Now : rental.ReturnedAt.Value;
+
+            return (decimal)Math.Ceiling((latestDate.Date - rental.RentedAt.Date).TotalDays);
+        }
+
+        private List<SelectListItem> GetSelectListItemsByMaxCount(int maxCount, int selected)
         {
             var items = new List<SelectListItem>();
 
@@ -178,6 +243,25 @@ namespace Car.Rental.Web.App.Controllers
             }
 
             return items;
+        }
+
+        private string GenerateCsvString(List<object> viewModels)
+        {
+            if (viewModels.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            using (var memoryStream = new MemoryStream())
+            {
+                using (var streamWriter = new StreamWriter(memoryStream))
+                using (var csvWriter = new CsvWriter(streamWriter))
+                {
+                    csvWriter.WriteRecords(viewModels);
+                } // StreamWriter gets flushed here.
+
+                return "data:text/csv;charset=utf-8, " + Encoding.Default.GetString(memoryStream.ToArray());
+            }
         }
     }
 }
