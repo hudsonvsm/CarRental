@@ -18,9 +18,17 @@ namespace Car.Rental.Web.App.Controllers
         private CarRentalDbContext db = new CarRentalDbContext();
 
         // GET: VehicleBrands
-        public ActionResult Index()
+        public ActionResult Index(string searchString)
         {
-            return View(db.VehicleBrands.ToList());
+            if (string.IsNullOrWhiteSpace(searchString))
+            {
+                searchString = "";
+            }
+
+            var vehicleBrands = db.VehicleBrands
+                .Where(vb => vb.Name.Contains(searchString));
+
+            return View(vehicleBrands.ToList());
         }
 
         // GET: VehicleBrands/Details/5

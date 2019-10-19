@@ -6,6 +6,16 @@
 
 <h2>Index</h2>
 
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div class="form-group row">
+        <label class="col-form-label">Search: </label>
+        <input class="form-control col mx-2" type="text" name="SearchString">
+        <input type="submit" value="Filter" class="btn btn-outline-info col-2" />
+    </div>
+}
+
 <p>
     @Html.ActionLink("Create New", "Create", null, htmlAttributes: new { @class = "btn btn-outline-dark" })
 </p>
@@ -26,26 +36,27 @@
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.VehicleBrand.Name)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Name)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.MaxPassengers)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.BigLuggage)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id = item.Id }, htmlAttributes: new { @class = "btn btn-outline-warning mx-1" })
-            @Html.ActionLink("Details", "Details", new { id = item.Id }, htmlAttributes: new { @class = "btn btn-outline-info mx-1" })
-            @Html.ActionLink("Delete", "Delete", new { id = item.Id }, htmlAttributes: new { @class = "btn btn-outline-danger mx-1" })
-        </td>
-    </tr>
-}
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.VehicleBrand.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MaxPassengers)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BigLuggage)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.Id }, htmlAttributes: new { @class = "btn btn-outline-warning mx-1" })
+                @Html.ActionLink("Details", "Details", new { id = item.Id }, htmlAttributes: new { @class = "btn btn-outline-info mx-1" })
+                @Html.ActionLink("Delete", "Delete", new { id = item.Id }, htmlAttributes: new { @class = "btn btn-outline-danger mx-1" })
+            </td>
+        </tr>
+    }
 
 </table>

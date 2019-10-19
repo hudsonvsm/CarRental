@@ -18,9 +18,18 @@ namespace Car.Rental.Web.App.Controllers
         private CarRentalDbContext db = new CarRentalDbContext();
 
         // GET: Vehicles
-        public ActionResult Index()
+        public ActionResult Index(string searchString)
         {
-            var vehicles = db.Vehicles.Include(v => v.VehicleModel);
+            if (string.IsNullOrWhiteSpace(searchString))
+            {
+                searchString = "";
+            }
+
+            var vehicles = db.Vehicles.Include(v => v.VehicleModel)
+               .Where(v => v.LicensePlate.Contains(searchString)
+                    || v.VehicleModel.Name.Contains(searchString)
+                    || v.VehicleModel.VehicleBrand.Name.Equals(searchString));
+
             return View(vehicles.ToList());
         }
 

@@ -18,9 +18,17 @@ namespace Car.Rental.Web.App.Controllers
         private CarRentalDbContext db = new CarRentalDbContext();
 
         // GET: DriverLicenses
-        public ActionResult Index()
+        public ActionResult Index(string searchString)
         {
-            return View(db.DriverLicenses.ToList());
+            if (string.IsNullOrWhiteSpace(searchString))
+            {
+                searchString = "";
+            }
+            var driverLicenses = db.DriverLicenses
+                .Where(r => r.IdentificationNumber.Contains(searchString)
+                    || r.Issuer.Contains(searchString));
+
+            return View(driverLicenses.ToList());
         }
 
         // GET: DriverLicenses/Details/5
