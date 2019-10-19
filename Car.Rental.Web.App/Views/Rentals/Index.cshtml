@@ -9,10 +9,11 @@
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    <p>
-        Title: <input type="text" name="SearchString">
-        <input type="submit" value="Filter" />
-    </p>
+    <div class="form-group row">
+        <label class="col-form-label">Search: </label>
+        <input class="form-control col mx-2" type="text" name="SearchString">
+        <input type="submit" value="Filter" class="btn btn-outline-info col-2" />
+    </div>
 }
 
 <p>
@@ -22,6 +23,10 @@
     <tr>
         <th>
             @Html.DisplayNameFor(model => model.Client.FirstName)
+            @Html.DisplayNameFor(model => model.Client.LastName)
+        </th>
+        <th>
+            Brand - Model
         </th>
         <th>
             @Html.DisplayNameFor(model => model.Vehicle.LicensePlate)
@@ -40,6 +45,11 @@
     <tr>
         <td>
             @Html.DisplayFor(modelItem => item.Client.FirstName)
+            @Html.DisplayFor(modelItem => item.Client.LastName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Vehicle.VehicleModel.VehicleBrand.Name) - 
+            @Html.DisplayFor(modelItem => item.Vehicle.VehicleModel.Name)
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.Vehicle.LicensePlate)

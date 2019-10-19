@@ -12,6 +12,8 @@ namespace Car.Rental.Web.App.Models
         [Required]
         [MaxLength(50)]
         [MinLength(8)]
+        [Index(IsUnique = true)]
+        [Column(TypeName = "NVARCHAR")]
         public string IdentificationNumber { get; set; }
 
         [DataType(DataType.Date)]

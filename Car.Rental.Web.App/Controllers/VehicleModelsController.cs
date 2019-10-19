@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using Car.Rental.Web.App.Extensions;
 using Car.Rental.Web.App.Models;
 using Car.Rental.Web.App.Models.DataAccessLayer;
 
@@ -51,15 +53,26 @@ namespace Car.Rental.Web.App.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,VehicleBrandId,Name,MaxPassengers,BigLuggage")] VehicleModel vehicleModel)
         {
+            var error = string.Empty;
+
             if (ModelState.IsValid)
             {
-                vehicleModel.Id = Guid.NewGuid();
-                db.VehicleModels.Add(vehicleModel);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                try
+                {
+                    vehicleModel.Id = Guid.NewGuid();
+                    db.VehicleModels.Add(vehicleModel);
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                catch (DbUpdateException ex)
+                {
+                    error = ex.GetDeepestMessage();
+                }
             }
 
             ViewBag.VehicleBrandId = new SelectList(db.VehicleBrands, "Id", "Name", vehicleModel.VehicleBrandId);
+            ViewBag.Error = error;
+
             return View(vehicleModel);
         }
 
@@ -86,13 +99,25 @@ namespace Car.Rental.Web.App.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,VehicleBrandId,Name,MaxPassengers,BigLuggage")] VehicleModel vehicleModel)
         {
+            var error = string.Empty;
+
             if (ModelState.IsValid)
             {
-                db.Entry(vehicleModel).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                try
+                {
+                    db.Entry(vehicleModel).State = EntityState.Modified;
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                catch (DbUpdateException ex)
+                {
+                    error = ex.GetDeepestMessage();
+                }
             }
+
             ViewBag.VehicleBrandId = new SelectList(db.VehicleBrands, "Id", "Name", vehicleModel.VehicleBrandId);
+            ViewBag.Error = error;
+
             return View(vehicleModel);
         }
 

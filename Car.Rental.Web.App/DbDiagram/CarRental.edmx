@@ -1,0 +1,428 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="CarRental.DBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Client">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="FirstName" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="LastName" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="IdentificationNumber" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Address" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="DriverLicenseId" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DriverLicense">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="IdentificationNumber" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="ValidUntil" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="Issuer" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="Rental">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="RentedAt" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="ReturnedAt" Type="datetime2" Precision="7" />
+          <Property Name="VehicleId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="ClientId" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Vehicle">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="LicensePlate" Type="nvarchar" MaxLength="4000" Nullable="false" />
+          <Property Name="VehicleModelId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="TechnicalInspectionDoneAt" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="PricePerDay" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Type" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="VehicleBrand">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="4000" Nullable="false" />
+        </EntityType>
+        <EntityType Name="VehicleModel">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="VehicleBrandId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="4000" Nullable="false" />
+          <Property Name="MaxPassengers" Type="int" Nullable="false" />
+          <Property Name="BigLuggage" Type="bit" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_dbo_Client_dbo_DriverLicense_DriverLicenseId">
+          <End Role="DriverLicense" Type="Self.DriverLicense" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Client" Type="Self.Client" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DriverLicense">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Client">
+              <PropertyRef Name="DriverLicenseId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_Rental_dbo_Client_ClientId">
+          <End Role="Client" Type="Self.Client" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Rental" Type="Self.Rental" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Client">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Rental">
+              <PropertyRef Name="ClientId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_Rental_dbo_Vehicle_VehicleId">
+          <End Role="Vehicle" Type="Self.Vehicle" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Rental" Type="Self.Rental" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Vehicle">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Rental">
+              <PropertyRef Name="VehicleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_Vehicle_dbo_VehicleModel_VehicleModelId">
+          <End Role="VehicleModel" Type="Self.VehicleModel" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Vehicle" Type="Self.Vehicle" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="VehicleModel">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Vehicle">
+              <PropertyRef Name="VehicleModelId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_VehicleModel_dbo_VehicleBrand_VehicleBrandId">
+          <End Role="VehicleBrand" Type="Self.VehicleBrand" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="VehicleModel" Type="Self.VehicleModel" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="VehicleBrand">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="VehicleModel">
+              <PropertyRef Name="VehicleBrandId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="CarRentalDBModelStoreContainer">
+          <EntitySet Name="Client" EntityType="Self.Client" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DriverLicense" EntityType="Self.DriverLicense" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Rental" EntityType="Self.Rental" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Vehicle" EntityType="Self.Vehicle" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="VehicleBrand" EntityType="Self.VehicleBrand" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="VehicleModel" EntityType="Self.VehicleModel" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_dbo_Client_dbo_DriverLicense_DriverLicenseId" Association="Self.FK_dbo_Client_dbo_DriverLicense_DriverLicenseId">
+            <End Role="DriverLicense" EntitySet="DriverLicense" />
+            <End Role="Client" EntitySet="Client" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_Rental_dbo_Client_ClientId" Association="Self.FK_dbo_Rental_dbo_Client_ClientId">
+            <End Role="Client" EntitySet="Client" />
+            <End Role="Rental" EntitySet="Rental" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_Rental_dbo_Vehicle_VehicleId" Association="Self.FK_dbo_Rental_dbo_Vehicle_VehicleId">
+            <End Role="Vehicle" EntitySet="Vehicle" />
+            <End Role="Rental" EntitySet="Rental" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_Vehicle_dbo_VehicleModel_VehicleModelId" Association="Self.FK_dbo_Vehicle_dbo_VehicleModel_VehicleModelId">
+            <End Role="VehicleModel" EntitySet="VehicleModel" />
+            <End Role="Vehicle" EntitySet="Vehicle" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_VehicleModel_dbo_VehicleBrand_VehicleBrandId" Association="Self.FK_dbo_VehicleModel_dbo_VehicleBrand_VehicleBrandId">
+            <End Role="VehicleBrand" EntitySet="VehicleBrand" />
+            <End Role="VehicleModel" EntitySet="VehicleModel" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="CarRental.DBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Client">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Guid" Nullable="false" />
+          <Property Name="FirstName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="LastName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="IdentificationNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Address" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="DriverLicenseId" Type="Guid" Nullable="false" />
+          <NavigationProperty Name="DriverLicense" Relationship="Self.FK_dbo_Client_dbo_DriverLicense_DriverLicenseId" FromRole="Client" ToRole="DriverLicense" />
+          <NavigationProperty Name="Rental" Relationship="Self.FK_dbo_Rental_dbo_Client_ClientId" FromRole="Client" ToRole="Rental" />
+        </EntityType>
+        <EntityType Name="DriverLicense">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Guid" Nullable="false" />
+          <Property Name="IdentificationNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ValidUntil" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="Issuer" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Client" Relationship="Self.FK_dbo_Client_dbo_DriverLicense_DriverLicenseId" FromRole="DriverLicense" ToRole="Client" />
+        </EntityType>
+        <EntityType Name="Rental">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Guid" Nullable="false" />
+          <Property Name="RentedAt" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="ReturnedAt" Type="DateTime" Precision="7" />
+          <Property Name="VehicleId" Type="Guid" Nullable="false" />
+          <Property Name="ClientId" Type="Guid" Nullable="false" />
+          <NavigationProperty Name="Client" Relationship="Self.FK_dbo_Rental_dbo_Client_ClientId" FromRole="Rental" ToRole="Client" />
+          <NavigationProperty Name="Vehicle" Relationship="Self.FK_dbo_Rental_dbo_Vehicle_VehicleId" FromRole="Rental" ToRole="Vehicle" />
+        </EntityType>
+        <EntityType Name="Vehicle">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Guid" Nullable="false" />
+          <Property Name="LicensePlate" Type="String" MaxLength="4000" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="VehicleModelId" Type="Guid" Nullable="false" />
+          <Property Name="TechnicalInspectionDoneAt" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="PricePerDay" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="Type" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Rental" Relationship="Self.FK_dbo_Rental_dbo_Vehicle_VehicleId" FromRole="Vehicle" ToRole="Rental" />
+          <NavigationProperty Name="VehicleModel" Relationship="Self.FK_dbo_Vehicle_dbo_VehicleModel_VehicleModelId" FromRole="Vehicle" ToRole="VehicleModel" />
+        </EntityType>
+        <EntityType Name="VehicleBrand">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Guid" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="4000" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="VehicleModel" Relationship="Self.FK_dbo_VehicleModel_dbo_VehicleBrand_VehicleBrandId" FromRole="VehicleBrand" ToRole="VehicleModel" />
+        </EntityType>
+        <EntityType Name="VehicleModel">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Guid" Nullable="false" />
+          <Property Name="VehicleBrandId" Type="Guid" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="4000" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="MaxPassengers" Type="Int32" Nullable="false" />
+          <Property Name="BigLuggage" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Vehicle" Relationship="Self.FK_dbo_Vehicle_dbo_VehicleModel_VehicleModelId" FromRole="VehicleModel" ToRole="Vehicle" />
+          <NavigationProperty Name="VehicleBrand" Relationship="Self.FK_dbo_VehicleModel_dbo_VehicleBrand_VehicleBrandId" FromRole="VehicleModel" ToRole="VehicleBrand" />
+        </EntityType>
+        <Association Name="FK_dbo_Client_dbo_DriverLicense_DriverLicenseId">
+          <End Role="DriverLicense" Type="Self.DriverLicense" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Client" Type="Self.Client" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="DriverLicense">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Client">
+              <PropertyRef Name="DriverLicenseId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_Rental_dbo_Client_ClientId">
+          <End Role="Client" Type="Self.Client" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Rental" Type="Self.Rental" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Client">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Rental">
+              <PropertyRef Name="ClientId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_Rental_dbo_Vehicle_VehicleId">
+          <End Role="Vehicle" Type="Self.Vehicle" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Rental" Type="Self.Rental" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Vehicle">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Rental">
+              <PropertyRef Name="VehicleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_Vehicle_dbo_VehicleModel_VehicleModelId">
+          <End Role="VehicleModel" Type="Self.VehicleModel" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Vehicle" Type="Self.Vehicle" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="VehicleModel">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Vehicle">
+              <PropertyRef Name="VehicleModelId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_VehicleModel_dbo_VehicleBrand_VehicleBrandId">
+          <End Role="VehicleBrand" Type="Self.VehicleBrand" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="VehicleModel" Type="Self.VehicleModel" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="VehicleBrand">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="VehicleModel">
+              <PropertyRef Name="VehicleBrandId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="Entities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Client" EntityType="Self.Client" />
+          <EntitySet Name="DriverLicense" EntityType="Self.DriverLicense" />
+          <EntitySet Name="Rental" EntityType="Self.Rental" />
+          <EntitySet Name="Vehicle" EntityType="Self.Vehicle" />
+          <EntitySet Name="VehicleBrand" EntityType="Self.VehicleBrand" />
+          <EntitySet Name="VehicleModel" EntityType="Self.VehicleModel" />
+          <AssociationSet Name="FK_dbo_Client_dbo_DriverLicense_DriverLicenseId" Association="Self.FK_dbo_Client_dbo_DriverLicense_DriverLicenseId">
+            <End Role="DriverLicense" EntitySet="DriverLicense" />
+            <End Role="Client" EntitySet="Client" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_Rental_dbo_Client_ClientId" Association="Self.FK_dbo_Rental_dbo_Client_ClientId">
+            <End Role="Client" EntitySet="Client" />
+            <End Role="Rental" EntitySet="Rental" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_Rental_dbo_Vehicle_VehicleId" Association="Self.FK_dbo_Rental_dbo_Vehicle_VehicleId">
+            <End Role="Vehicle" EntitySet="Vehicle" />
+            <End Role="Rental" EntitySet="Rental" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_Vehicle_dbo_VehicleModel_VehicleModelId" Association="Self.FK_dbo_Vehicle_dbo_VehicleModel_VehicleModelId">
+            <End Role="VehicleModel" EntitySet="VehicleModel" />
+            <End Role="Vehicle" EntitySet="Vehicle" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_VehicleModel_dbo_VehicleBrand_VehicleBrandId" Association="Self.FK_dbo_VehicleModel_dbo_VehicleBrand_VehicleBrandId">
+            <End Role="VehicleBrand" EntitySet="VehicleBrand" />
+            <End Role="VehicleModel" EntitySet="VehicleModel" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="CarRentalDBModelStoreContainer" CdmEntityContainer="Entities">
+          <EntitySetMapping Name="Client">
+            <EntityTypeMapping TypeName="CarRental.DBModel.Client">
+              <MappingFragment StoreEntitySet="Client">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="IdentificationNumber" ColumnName="IdentificationNumber" />
+                <ScalarProperty Name="Address" ColumnName="Address" />
+                <ScalarProperty Name="DriverLicenseId" ColumnName="DriverLicenseId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DriverLicense">
+            <EntityTypeMapping TypeName="CarRental.DBModel.DriverLicense">
+              <MappingFragment StoreEntitySet="DriverLicense">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="IdentificationNumber" ColumnName="IdentificationNumber" />
+                <ScalarProperty Name="ValidUntil" ColumnName="ValidUntil" />
+                <ScalarProperty Name="Issuer" ColumnName="Issuer" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Rental">
+            <EntityTypeMapping TypeName="CarRental.DBModel.Rental">
+              <MappingFragment StoreEntitySet="Rental">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="RentedAt" ColumnName="RentedAt" />
+                <ScalarProperty Name="ReturnedAt" ColumnName="ReturnedAt" />
+                <ScalarProperty Name="VehicleId" ColumnName="VehicleId" />
+                <ScalarProperty Name="ClientId" ColumnName="ClientId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Vehicle">
+            <EntityTypeMapping TypeName="CarRental.DBModel.Vehicle">
+              <MappingFragment StoreEntitySet="Vehicle">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="LicensePlate" ColumnName="LicensePlate" />
+                <ScalarProperty Name="VehicleModelId" ColumnName="VehicleModelId" />
+                <ScalarProperty Name="TechnicalInspectionDoneAt" ColumnName="TechnicalInspectionDoneAt" />
+                <ScalarProperty Name="PricePerDay" ColumnName="PricePerDay" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="VehicleBrand">
+            <EntityTypeMapping TypeName="CarRental.DBModel.VehicleBrand">
+              <MappingFragment StoreEntitySet="VehicleBrand">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="VehicleModel">
+            <EntityTypeMapping TypeName="CarRental.DBModel.VehicleModel">
+              <MappingFragment StoreEntitySet="VehicleModel">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="VehicleBrandId" ColumnName="VehicleBrandId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="MaxPassengers" ColumnName="MaxPassengers" />
+                <ScalarProperty Name="BigLuggage" ColumnName="BigLuggage" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

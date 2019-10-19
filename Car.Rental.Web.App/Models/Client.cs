@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Car.Rental.Web.App.Models
 {
@@ -23,6 +24,8 @@ namespace Car.Rental.Web.App.Models
         [Required]
         [MaxLength(50)]
         [MinLength(8)]
+        [Index(IsUnique = true)]
+        [Column(TypeName = "NVARCHAR")]
         public string IdentificationNumber { get; set; } // ЕГН
 
         [Required]

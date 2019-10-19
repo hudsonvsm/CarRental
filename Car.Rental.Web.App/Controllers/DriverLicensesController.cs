@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using Car.Rental.Web.App.Extensions;
 using Car.Rental.Web.App.Models;
 using Car.Rental.Web.App.Models.DataAccessLayer;
 
@@ -49,13 +51,24 @@ namespace Car.Rental.Web.App.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,IdentificationNumber,ValidUntil,Issuer")] DriverLicense driverLicense)
         {
+            var error = string.Empty;
+
             if (ModelState.IsValid)
             {
-                driverLicense.Id = Guid.NewGuid();
-                db.DriverLicenses.Add(driverLicense);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                try
+                {
+                    driverLicense.Id = Guid.NewGuid();
+                    db.DriverLicenses.Add(driverLicense);
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                catch (DbUpdateException ex)
+                {
+                    error = ex.GetDeepestMessage();
+                }
             }
+
+            ViewBag.Error = error;
 
             return View(driverLicense);
         }
@@ -82,12 +95,24 @@ namespace Car.Rental.Web.App.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,IdentificationNumber,ValidUntil,Issuer")] DriverLicense driverLicense)
         {
+            var error = string.Empty;
+
             if (ModelState.IsValid)
             {
-                db.Entry(driverLicense).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                try
+                {
+                    db.Entry(driverLicense).State = EntityState.Modified;
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                catch (DbUpdateException ex)
+                {
+                    error = ex.GetDeepestMessage();
+                }
             }
+
+            ViewBag.Error = error;
+
             return View(driverLicense);
         }
 

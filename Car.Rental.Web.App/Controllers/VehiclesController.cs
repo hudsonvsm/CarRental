@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using Car.Rental.Web.App.Extensions;
 using Car.Rental.Web.App.Models;
 using Car.Rental.Web.App.Models.DataAccessLayer;
 
@@ -51,15 +53,26 @@ namespace Car.Rental.Web.App.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,LicensePlate,VehicleModelId,TechnicalInspectionDoneAt,PricePerDay,Type")] Vehicle vehicle)
         {
+            var error = string.Empty;
+
             if (ModelState.IsValid)
             {
-                vehicle.Id = Guid.NewGuid();
-                db.Vehicles.Add(vehicle);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                try
+                {
+                    vehicle.Id = Guid.NewGuid();
+                    db.Vehicles.Add(vehicle);
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                catch (DbUpdateException ex)
+                {
+                    error = ex.GetDeepestMessage();
+                }
             }
 
             ViewBag.VehicleModelId = new SelectList(db.VehicleModels, "Id", "Name", vehicle.VehicleModelId);
+            ViewBag.Error = error;
+
             return View(vehicle);
         }
 
@@ -70,12 +83,16 @@ namespace Car.Rental.Web.App.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+
             Vehicle vehicle = db.Vehicles.Find(id);
+
             if (vehicle == null)
             {
                 return HttpNotFound();
             }
+
             ViewBag.VehicleModelId = new SelectList(db.VehicleModels, "Id", "Name", vehicle.VehicleModelId);
+
             return View(vehicle);
         }
 
@@ -86,13 +103,25 @@ namespace Car.Rental.Web.App.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,LicensePlate,VehicleModelId,TechnicalInspectionDoneAt,PricePerDay,Type")] Vehicle vehicle)
         {
+            var error = string.Empty;
+
             if (ModelState.IsValid)
             {
-                db.Entry(vehicle).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                try
+                {
+                    db.Entry(vehicle).State = EntityState.Modified;
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                catch (DbUpdateException ex)
+                {
+                    error = ex.GetDeepestMessage();
+                }
             }
+
             ViewBag.VehicleModelId = new SelectList(db.VehicleModels, "Id", "Name", vehicle.VehicleModelId);
+            ViewBag.Error = error;
+
             return View(vehicle);
         }
 

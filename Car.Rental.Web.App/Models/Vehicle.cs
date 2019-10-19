@@ -21,6 +21,8 @@ namespace Car.Rental.Web.App.Models
         public Guid Id { get; set; }
 
         [Required]
+        [Index(IsUnique = true)]
+        [Column(TypeName = "NVARCHAR")]
         public string LicensePlate { get; set; }
 
         [Required]

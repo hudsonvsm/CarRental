@@ -6,6 +6,13 @@
 
 <h2>Create</h2>
 
+@if (!string.IsNullOrWhiteSpace(ViewBag.Error))
+{
+    <div class="alert alert-danger">
+        <strong>Danger!</strong> @ViewBag.Error
+    </div>
+}
+
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()

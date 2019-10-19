@@ -27,6 +27,8 @@ namespace Car.Rental.Web.App.Controllers
             var rentals = db.Rentals.Include(r => r.Client).Include(r => r.Vehicle)
                 .Where(r => r.Client.FirstName.Contains(searchString) 
                     || r.Client.LastName.Contains(searchString) 
+                    || r.Vehicle.VehicleModel.Name.Contains(searchString) 
+                    || r.Vehicle.VehicleModel.VehicleBrand.Name.Contains(searchString)
                     || r.Vehicle.LicensePlate.Contains(searchString));
 
             return View(rentals.ToList());

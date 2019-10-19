@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="97c270aefe2249ce80cae4bf221a3f1b" Name="Diagram1">
+        <EntityTypeShape EntityType="CarRental.DBModel.Client" Width="1.5" PointX="11.125" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="CarRental.DBModel.DriverLicense" Width="1.5" PointX="14" PointY="1.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CarRental.DBModel.Rental" Width="1.5" PointX="8.25" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="CarRental.DBModel.Vehicle" Width="1.5" PointX="5.25" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="CarRental.DBModel.VehicleBrand" Width="1.5" PointX="0.75" PointY="1.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CarRental.DBModel.VehicleModel" Width="1.5" PointX="3" PointY="1" IsExpanded="true" />
+        <AssociationConnector Association="CarRental.DBModel.FK_dbo_Client_dbo_DriverLicense_DriverLicenseId" ManuallyRouted="false" />
+        <AssociationConnector Association="CarRental.DBModel.FK_dbo_Rental_dbo_Client_ClientId" ManuallyRouted="false" />
+        <AssociationConnector Association="CarRental.DBModel.FK_dbo_Rental_dbo_Vehicle_VehicleId" ManuallyRouted="false" />
+        <AssociationConnector Association="CarRental.DBModel.FK_dbo_Vehicle_dbo_VehicleModel_VehicleModelId" ManuallyRouted="false" />
+        <AssociationConnector Association="CarRental.DBModel.FK_dbo_VehicleModel_dbo_VehicleBrand_VehicleBrandId" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
